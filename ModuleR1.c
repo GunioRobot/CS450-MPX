@@ -1,13 +1,13 @@
 /*
  *  ModuleR1.c
- *  
+ *
  *
  *  Created by Jared Crawford on 1/24/10.
  *  Copyright 2010 Jared Crawford. All rights reserved.
  *
  */
- 
- 
+
+
 	//NOTE: be sure to change the version, modification date, and modifier in version() every time you commit!
 	//ALSO: my friend who took this last semester said a major problem they found was that
 	//Turbo C required them to define their variables before they do anything else in each function,
@@ -26,7 +26,7 @@
 #ifndef DEBUG
 
 	#define DEBUG 0
-	
+
 	#define VERSION_NUM 1.0
 
 	#define MAX_INPUT_SIZE 80
@@ -38,7 +38,7 @@
 
 	#define ALLOC_STR(NAME,SIZE,CONTENTS) char NAME[SIZE] = (char*)sys_alloc_mem(sizeof(char)*SIZE); \
 		strncpy(NAME, CONTENTS, SIZE)
-	
+
 #endif
 
 //////////////////////////
@@ -78,14 +78,14 @@ void commandHandler(){
 	int invalidParamNum;
 	int exitFlag = 0;
 	ALLOC_STR(prompt, MAX_PROMPT_SIZE, "/");
-	
+
 	//reuse these params in the do loop
 	ALLOC_STR(userInput, MAX_INPUT_SIZE, "");
 	ALLOC_STR(functionName, MAX_PARAM_SIZE, "");
 	ALLOC_STR(functionParameters, MAX_INPUT_SIZE, "");
-	
-	
-	
+
+
+
 	do {
 		printf("%s", prompt);
 		strncpy(userInput, getUserInput(), MAX_INPUT_SIZE);
@@ -100,14 +100,14 @@ void commandHandler(){
 		else {
 			//display error message for invalidParamNum
 		}
-		
+
 	} while (!exitFlag);
-	
+
 	sys_free_mem(prompt);
 	sys_free_mem(userInput);
 	sys_free_mem(functionName);
 	sys_free_mem(functionParameters);
-	
+
 }
 
 void displayExitMessage(){
@@ -120,22 +120,22 @@ void cleanUpGlobals(){
 }
 
 int parseInput(char *userInput, char *functionName, char *functionParameters, int *numParameters){
-	
+
 	//Still can't figure out how to get the number of parameters into memory, but if someone figures it out, it'll take like two lines and I'll put it in.
 	//Added error checking for too many params and commands/params that are too long
 	//I changed the function to return integers (0 for success, 1 for error). I was too afraid to start playing with other people's code,
 	//this will need to be changed when you use parseInput.
 	//Other than writing numParameters to memory, this function is done.
-	
+
 	int curPos = 0;
 	int i = 0;
 	int paramCounter = 0;
 	int maxParamsAllowed = (MAX_INPUT_SIZE/MAX_PARAM_SIZE) - 1;	//Determines how many params are allowed AS LONG AS THE MAX COMMAND AND MAX PARAM SIZES ARE THE SAME
-	
+
 	while (*userInput == ' ') {
 			userInput++;
 	}
-	
+
 	//Loop to find functionName and store it in array
 	while ((*userInput != '\0') && (*userInput != ' ')) {
 		*functionName = *userInput;
@@ -147,28 +147,28 @@ int parseInput(char *userInput, char *functionName, char *functionParameters, in
 			return 1;
 		}
 	}
-	
+
 	//Fills rest of functionName with spaces
 	for (i=curPos; curPos < MAX_PARAM_SIZE; curPos++) {
 		*functionName = ' ';
 		functionName++;
 	}
-	
+
 	curPos = 0;
-	
+
 	//Removes spaces between command and first parameter
 	while (*userInput == ' ') {
 			userInput++;
 	}
-	
+
 	//Loop to find functionParameters and store them in array
 	while (*userInput != '\0') {
-		
+
 		if (paramCounter >= maxParamsAllowed) {
 			printf("\nERROR: There can be no more than %d parameters.", maxParamsAllowed);
 			return 1;
 		}
-		
+
 		while ((*userInput != '\0') && (*userInput != ' ')) {
 			*functionParameters = *userInput;
 			userInput++;
@@ -178,31 +178,31 @@ int parseInput(char *userInput, char *functionName, char *functionParameters, in
 				printf("\nERROR: Parameters must be no more than %d characters.\n", MAX_PARAM_SIZE);
 				return 1;
 			}
-			
+
 		}
-		
-		
+
+
 		for (i=curPos; curPos < MAX_PARAM_SIZE; curPos++) {
 				*functionParameters = ' ';
 				functionParameters++;
 		}
-		
+
 		curPos = 0;
 		paramCounter++;
-		
+
 		//Removes spaces between parameters
 		while (*userInput == ' ') {
 			userInput++;
 		}
-		
+
 	}
-	
+
 	printf("%d\n", paramCounter);	//FOR DEBUGGING PURPOSES
 	//*numParameters = paramCounter;
 	//printf("%d", numParameters);
 	//printf("\n");
 	return 0;
-	
+
 }
 
 
@@ -213,13 +213,13 @@ int invalidParameter(char *functionName, char *functionParameters, int *numParam
 void callFunction(char *functionName, char *functionParameters, int *numParameters){
 	//set up string for version text since all the version function does is print text
 	ALLOC_STR(verText, MAX_VER_SIZE, "");
-	
+
 	if (!strcmp(functionName, "help")) {
 		//execute help
 		help(functionParameters, numParameters);
 	}
 	else if(!strcmp(functionName, "dir") {
-		
+
 	}
 	else if(!strcmp(functionName, "version") {
 		//call version
@@ -246,7 +246,7 @@ char *genericHelpText(){
 	\tdate\n\
 	\n\
 	Type \"help <command>\" to learn more.\n";
-	
+
 }
 
 //if param != valid functionName, display genericHelpText
@@ -255,7 +255,7 @@ char *genericHelpText(){
 void help(char *functionParameters, int *numParameters){
 	//set up the string to store the help text
 	ALLOC_STR(helpText, MAX_HELP_SIZE, "");
-	
+
 	//make sure there is a param to check help against
 	if (numParameters > 0) {
 		if (!strcmp("dir",functionParameters[0])) {
@@ -277,7 +277,7 @@ void help(char *functionParameters, int *numParameters){
 	else {
 		strncpy(helpText, genericHelpText(), MAX_HELP_SIZE);
 	}
-	
+
 	printf("%s", helpText);
 	sys_free_mem(helpText);
 }
